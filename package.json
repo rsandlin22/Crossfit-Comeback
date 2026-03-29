@@ -1,0 +1,15 @@
+{
+  "name": "crossfit-comeback",
+  "version": "1.0.0",
+  "description": "CrossFit Month 1 Training Dashboard",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "express": "^4.18.2"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}
