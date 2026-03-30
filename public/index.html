@@ -3,546 +3,1309 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Sec. 43 — Indicator Ownership</title>
-<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Mono:wght@400;500&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<title>CrossFit Comeback – Month 1</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Mono:wght@400;500&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
   :root {
-    --bg: #f4f6f9;
-    --surface: #ffffff;
-    --surface2: #f1f5f9;
-    --surface3: #e8eef5;
-    --border: #dde3ec;
-    --border2: #c4cdd9;
-    --accent: #0f6b52;
-    --accent-light: #e6f4f0;
-    --accent2: #4338ca;
-    --accent2-light: #eef2ff;
-    --danger: #dc2626;
-    --grade3: #0369a1;
-    --grade48: #0f6b52;
-    --grade10: #b45309;
-    --grade12: #9d174d;
-    --text: #0f172a;
-    --muted: #64748b;
-    --highlight-bg: #ebf5f1;
-    --dim: #94a3b8;
+    --bg: #0d0d0f;
+    --surface: #141416;
+    --card: #1a1a1d;
+    --border: #2a2a2e;
+    --accent: #e8ff47;
+    --accent2: #ff5e3a;
+    --accent3: #3ae8ff;
+    --text: #f0f0f0;
+    --muted: #666;
+    --muted2: #444;
+    --green: #4cff91;
+    --yellow: #ffcc00;
   }
+
   * { box-sizing: border-box; margin: 0; padding: 0; }
+
   body {
     background: var(--bg);
     color: var(--text);
     font-family: 'DM Sans', sans-serif;
-    font-size: 14px;
     min-height: 100vh;
-    padding: 0 0 60px;
     overflow-x: hidden;
   }
 
-  /* ── Header ── */
-  .header {
-    padding: 28px 40px 22px;
-    border-bottom: 1px solid var(--border);
-    background: var(--surface);
-    position: sticky; top: 0; z-index: 100;
-    display: flex; align-items: flex-end; gap: 32px; flex-wrap: wrap;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+  /* Background texture */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: 
+      radial-gradient(ellipse at 20% 20%, rgba(232,255,71,0.04) 0%, transparent 50%),
+      radial-gradient(ellipse at 80% 80%, rgba(58,232,255,0.03) 0%, transparent 50%);
+    pointer-events: none;
+    z-index: 0;
   }
-  .header-left h1 { font-family: 'DM Serif Display', serif; font-size: 22px; font-weight: 400; color: var(--text); letter-spacing: -0.3px; }
-  .header-left p { font-size: 12px; color: var(--muted); margin-top: 4px; font-family: 'DM Mono', monospace; letter-spacing: 0.02em; }
-  .filter-area { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
-  .filter-label { font-size: 11px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); }
-  .person-pills { display: flex; flex-wrap: wrap; gap: 8px; }
-  .pill { border: 1.5px solid var(--border); background: transparent; color: var(--dim); font-family: 'DM Sans', sans-serif; font-size: 12.5px; font-weight: 500; padding: 5px 13px; border-radius: 100px; cursor: pointer; transition: all 0.15s ease; white-space: nowrap; }
-  .pill:hover { border-color: var(--accent); color: var(--accent); }
-  .pill.active-owner { background: var(--accent-light); border-color: var(--accent); color: var(--accent); }
-  .pill.active-sponsor { background: var(--accent2-light); border-color: var(--accent2); color: var(--accent2); }
-  .pill.show-all { border-color: var(--border); color: var(--muted); }
-  .pill.show-all.active-owner { background: var(--surface2); border-color: var(--border2); color: var(--text); }
-  .role-toggle { display: flex; border: 1.5px solid var(--border); border-radius: 8px; overflow: hidden; }
-  .role-btn { background: transparent; border: none; font-family: 'DM Sans', sans-serif; font-size: 11.5px; font-weight: 600; padding: 6px 14px; cursor: pointer; letter-spacing: 0.04em; text-transform: uppercase; color: var(--muted); transition: all 0.15s; }
-  .role-btn:first-child { border-right: 1.5px solid var(--border); }
-  .role-btn.active { background: var(--accent-light); color: var(--accent); }
-  .role-btn.active.sponsor-mode { background: var(--accent2-light); color: var(--accent2); }
-  .legend { display: flex; gap: 16px; align-items: center; flex-wrap: wrap; }
-  .legend-item { display: flex; align-items: center; gap: 5px; font-size: 11px; color: var(--muted); }
-  .legend-dot { width: 8px; height: 8px; border-radius: 2px; }
-  .leg-owner { background: var(--accent); }
-  .leg-sponsor { background: var(--accent2); }
 
-  /* ── Stats bar ── */
-  .stats-bar { padding: 10px 40px; background: var(--surface); border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 20px; font-family: 'DM Mono', monospace; font-size: 11px; color: var(--muted); }
-  .stats-bar .count { color: var(--accent); font-weight: 600; }
-  .stats-bar .count.sponsor { color: var(--accent2); }
+  .container { max-width: 1200px; margin: 0 auto; padding: 0 20px; position: relative; z-index: 1; }
 
-  /* ── Main ── */
-  .main { padding: 28px 40px; display: flex; flex-direction: column; gap: 28px; }
-  .grade-header { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; }
-  .grade-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
-  .grade-title { font-family: 'DM Mono', monospace; font-size: 11px; font-weight: 500; letter-spacing: 0.12em; text-transform: uppercase; }
-  .grade-count { font-family: 'DM Mono', monospace; font-size: 10px; color: var(--muted); margin-left: auto; }
-  .grade-3 .grade-dot { background: var(--grade3); } .grade-3 .grade-title { color: var(--grade3); }
-  .grade-48 .grade-dot { background: var(--grade48); } .grade-48 .grade-title { color: var(--grade48); }
-  .grade-10 .grade-dot { background: var(--grade10); } .grade-10 .grade-title { color: var(--grade10); }
-  .grade-12 .grade-dot { background: var(--grade12); } .grade-12 .grade-title { color: var(--grade12); }
-  .indicators-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(360px, 1fr)); gap: 10px; }
+  /* Header */
+  header {
+    border-bottom: 1px solid var(--border);
+    padding: 28px 0 24px;
+    margin-bottom: 32px;
+  }
 
-  /* ── Card ── */
-  .card { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 16px 18px; transition: all 0.18s ease; position: relative; overflow: hidden; cursor: pointer; }
-  .card:hover { border-color: var(--border2); transform: translateY(-1px); box-shadow: 0 4px 16px rgba(0,0,0,0.08); }
-  .card::before { content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 3px; }
-  .grade-3 .card::before { background: var(--grade3); }
-  .grade-48 .card::before { background: var(--grade48); }
-  .grade-10 .card::before { background: var(--grade10); }
-  .grade-12 .card::before { background: var(--grade12); }
-  .card.highlighted { background: var(--highlight-bg); border-color: #a7d9cc; box-shadow: 0 0 0 1px #c5ebe0; }
-  .card.highlighted-sponsor { background: var(--accent2-light); border-color: #a5b4fc; }
-  .card.dimmed { opacity: 0.28; filter: grayscale(0.5); }
-  .card-id { font-family: 'DM Mono', monospace; font-size: 10px; color: var(--muted); margin-bottom: 6px; }
-  .card-title { font-size: 13px; font-weight: 600; color: var(--text); line-height: 1.45; margin-bottom: 8px; }
-  .card-summary { font-size: 12px; color: var(--muted); line-height: 1.6; margin-bottom: 10px; }
-  .card-badges { display: flex; gap: 6px; margin-bottom: 10px; flex-wrap: wrap; }
-  .badge { font-family: 'DM Mono', monospace; font-size: 9px; letter-spacing: 0.05em; text-transform: uppercase; padding: 2px 7px; border-radius: 4px; font-weight: 500; }
-  .badge-links { background: #e0f2fe; color: #0369a1; border: 1px solid #bae6fd; }
-  .badge-actions { background: #fef9c3; color: #854d0e; border: 1px solid #fde68a; }
-  .badge-comments { background: #ede9fe; color: #5b21b6; border: 1px solid #c4b5fd; }
-  .card-people { display: flex; gap: 8px; flex-wrap: wrap; }
-  .person-tag { display: flex; align-items: center; gap: 5px; font-size: 11px; padding: 3px 9px; border-radius: 6px; font-weight: 500; }
-  .person-tag.owner { background: #e6f4f0; color: var(--accent); border: 1px solid #b8ddd5; }
-  .person-tag.sponsor { background: var(--accent2-light); color: var(--accent2); border: 1px solid #c7d2fe; }
-  .person-tag.active-person { background: #c5ebe0; color: var(--accent); border-color: #7ec8b2; }
-  .person-tag.active-person.sponsor { background: #c7d2fe; color: var(--accent2); border-color: #818cf8; }
-  .tag-role { font-family: 'DM Mono', monospace; font-size: 9px; letter-spacing: 0.06em; text-transform: uppercase; opacity: 0.6; }
-  .card-open-hint { position: absolute; right: 14px; bottom: 12px; font-size: 10px; color: var(--muted); opacity: 0; transition: opacity 0.15s; font-family: 'DM Mono', monospace; }
-  .card:hover .card-open-hint { opacity: 1; }
+  .header-inner {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    gap: 20px;
+    flex-wrap: wrap;
+  }
 
-  /* ── Overlay ── */
-  .overlay { position: fixed; inset: 0; background: rgba(15,23,42,0.35); backdrop-filter: blur(2px); z-index: 200; opacity: 0; pointer-events: none; transition: opacity 0.25s; }
-  .overlay.open { opacity: 1; pointer-events: all; }
+  .logo {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 48px;
+    letter-spacing: 2px;
+    line-height: 1;
+    color: var(--accent);
+  }
 
-  /* ── Drawer ── */
-  .drawer { position: fixed; top: 0; right: 0; bottom: 0; width: min(580px, 100vw); background: var(--surface); border-left: 1px solid var(--border); box-shadow: -8px 0 32px rgba(0,0,0,0.1); z-index: 201; display: flex; flex-direction: column; transform: translateX(100%); transition: transform 0.3s cubic-bezier(0.32,0.72,0,1); }
-  .drawer.open { transform: translateX(0); }
+  .logo span { color: var(--text); }
 
-  .drawer-header { padding: 22px 24px 18px; border-bottom: 1px solid var(--border); flex-shrink: 0; position: relative; }
-  .drawer-grade-tag { font-family: 'DM Mono', monospace; font-size: 10px; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; margin-bottom: 8px; }
-  .drawer-id { font-family: 'DM Mono', monospace; font-size: 11px; color: var(--muted); margin-bottom: 6px; }
-  .drawer-title { font-family: 'DM Serif Display', serif; font-size: 17px; font-weight: 400; line-height: 1.4; color: var(--text); margin-bottom: 10px; padding-right: 36px; }
-  .drawer-summary { font-size: 12.5px; color: var(--muted); line-height: 1.65; margin-bottom: 14px; }
-  .drawer-people { display: flex; gap: 8px; flex-wrap: wrap; }
-  .drawer-close { position: absolute; top: 18px; right: 18px; background: var(--surface2); border: 1px solid var(--border); border-radius: 8px; color: var(--muted); font-size: 15px; width: 30px; height: 30px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.15s; }
-  .drawer-close:hover { color: var(--text); border-color: var(--border2); }
+  .tagline {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    color: var(--muted);
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    margin-top: 4px;
+  }
 
-  .drawer-body { flex: 1; overflow-y: auto; }
-  .drawer-body::-webkit-scrollbar { width: 4px; }
-  .drawer-body::-webkit-scrollbar-track { background: transparent; }
-  .drawer-body::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 2px; }
+  .header-stats {
+    display: flex;
+    gap: 24px;
+    flex-wrap: wrap;
+  }
 
-  /* ── Drawer sections ── */
-  .dsection { border-bottom: 1px solid var(--border); padding: 20px 24px; }
-  .dsection:last-child { border-bottom: none; }
-  .dsection-title { font-size: 11px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); display: flex; align-items: center; gap: 7px; margin-bottom: 16px; }
+  .hstat {
+    text-align: right;
+  }
 
-  /* Links */
-  .link-list { display: flex; flex-direction: column; gap: 8px; margin-bottom: 14px; }
-  .link-item { display: flex; align-items: center; gap: 10px; background: var(--surface2); border: 1px solid var(--border); border-radius: 8px; padding: 10px 12px; transition: border-color 0.15s; }
-  .link-item:hover { border-color: var(--border2); }
-  .link-icon { font-size: 15px; flex-shrink: 0; }
-  .link-content { flex: 1; min-width: 0; }
-  .link-label { font-size: 12.5px; font-weight: 500; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-  .link-url { font-size: 10.5px; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-family: 'DM Mono', monospace; margin-top: 2px; }
-  .link-open { color: var(--accent); text-decoration: none; font-size: 11.5px; font-weight: 600; flex-shrink: 0; padding: 4px 8px; border-radius: 6px; background: var(--accent-light); border: 1px solid #b8ddd5; transition: all 0.15s; }
-  .link-open:hover { background: #c5ebe0; }
-  .icon-btn { background: none; border: none; cursor: pointer; color: var(--muted); font-size: 13px; padding: 3px 5px; border-radius: 4px; transition: all 0.15s; flex-shrink: 0; }
-  .icon-btn:hover { color: var(--danger); background: #fee2e2; }
+  .hstat-val {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 32px;
+    color: var(--accent);
+    line-height: 1;
+  }
 
-  .add-row { display: flex; gap: 8px; margin-bottom: 8px; }
-  .dinput { flex: 1; background: var(--surface2); border: 1px solid var(--border); border-radius: 8px; padding: 9px 12px; color: var(--text); font-family: 'DM Sans', sans-serif; font-size: 12.5px; outline: none; transition: border-color 0.15s; }
-  .dinput:focus { border-color: var(--accent); }
-  .dinput::placeholder { color: var(--muted); }
-  .dbtn { background: var(--accent); border: 1.5px solid var(--accent); color: #ffffff; border-radius: 8px; padding: 9px 16px; font-family: 'DM Sans', sans-serif; font-size: 12px; font-weight: 600; cursor: pointer; transition: all 0.15s; white-space: nowrap; }
-  .dbtn:hover { background: #0a5442; border-color: #0a5442; }
+  .hstat-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
 
-  /* Actions */
-  .action-list { display: flex; flex-direction: column; gap: 6px; margin-bottom: 14px; }
-  .action-item { display: flex; align-items: flex-start; gap: 10px; background: var(--surface2); border: 1px solid var(--border); border-radius: 8px; padding: 10px 12px; }
-  .action-check { width: 16px; height: 16px; border-radius: 4px; border: 1.5px solid var(--border2); background: transparent; cursor: pointer; flex-shrink: 0; margin-top: 2px; appearance: none; -webkit-appearance: none; transition: all 0.15s; position: relative; }
-  .action-check:checked { background: var(--accent); border-color: var(--accent); }
-  .action-check:checked::after { content: '✓'; position: absolute; top: -1px; left: 2px; font-size: 11px; color: #0f1117; font-weight: 700; }
-  .action-text { flex: 1; font-size: 12.5px; color: var(--text); line-height: 1.5; word-break: break-word; }
-  .action-text.done { text-decoration: line-through; color: var(--muted); }
+  /* Progress bar */
+  .month-progress {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 16px 20px;
+    margin-bottom: 28px;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+  }
 
-  /* Comments */
-  .comment-list { display: flex; flex-direction: column; gap: 10px; margin-bottom: 16px; }
-  .comment-item { background: var(--surface2); border: 1px solid var(--border); border-radius: 8px; padding: 12px 14px; }
-  .comment-meta { display: flex; align-items: center; justify-content: space-between; margin-bottom: 7px; }
-  .comment-author { font-size: 12px; font-weight: 600; color: var(--accent2); }
-  .comment-time { font-family: 'DM Mono', monospace; font-size: 10px; color: var(--muted); }
-  .comment-body { font-size: 12.5px; color: var(--text); line-height: 1.65; white-space: pre-wrap; word-break: break-word; }
-  .comment-form { display: flex; flex-direction: column; gap: 8px; }
-  .dtextarea { width: 100%; background: var(--surface2); border: 1px solid var(--border); border-radius: 8px; padding: 10px 12px; color: var(--text); font-family: 'DM Sans', sans-serif; font-size: 12.5px; line-height: 1.6; resize: vertical; min-height: 80px; outline: none; transition: border-color 0.15s; }
-  .dtextarea:focus { border-color: var(--accent); }
-  .dtextarea::placeholder { color: var(--muted); }
-  .submit-row { display: flex; justify-content: flex-end; }
+  .progress-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    white-space: nowrap;
+  }
 
-  .empty-state { text-align: center; padding: 14px; color: var(--muted); font-size: 12px; font-style: italic; }
-  .empty { text-align: center; padding: 60px 20px; color: var(--muted); font-size: 13px; }
-  .empty span { font-family: 'DM Mono', monospace; color: var(--accent); }
+  .progress-bar-wrap {
+    flex: 1;
+    height: 6px;
+    background: var(--border);
+    border-radius: 3px;
+    overflow: hidden;
+  }
+
+  .progress-bar-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--accent), var(--accent3));
+    border-radius: 3px;
+    transition: width 0.5s ease;
+  }
+
+  .progress-pct {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 22px;
+    color: var(--accent);
+    min-width: 50px;
+    text-align: right;
+  }
+
+  /* Week tabs */
+  .week-tabs {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 24px;
+    overflow-x: auto;
+    padding-bottom: 4px;
+  }
+
+  .week-tab {
+    font-family: 'DM Mono', monospace;
+    font-size: 12px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    padding: 10px 20px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 3px;
+    color: var(--muted);
+    cursor: pointer;
+    white-space: nowrap;
+    transition: all 0.2s;
+  }
+
+  .week-tab:hover { border-color: var(--accent); color: var(--accent); }
+
+  .week-tab.active {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: #000;
+    font-weight: 500;
+  }
+
+  /* Grid layout */
+  .week-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+    gap: 16px;
+    margin-bottom: 32px;
+  }
+
+  /* Day card */
+  .day-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    overflow: hidden;
+    transition: border-color 0.2s;
+  }
+
+  .day-card:hover { border-color: var(--muted2); }
+  .day-card.rest-day { opacity: 0.6; }
+  .day-card.completed { border-color: var(--green); }
+  .day-card.completed .day-header { background: rgba(76,255,145,0.06); }
+
+  .day-header {
+    padding: 14px 16px;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .day-label {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 11px;
+    letter-spacing: 2px;
+    color: var(--muted);
+    text-transform: uppercase;
+  }
+
+  .day-name {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 22px;
+    line-height: 1;
+    color: var(--text);
+  }
+
+  .day-type {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    padding: 4px 8px;
+    border-radius: 2px;
+    white-space: nowrap;
+  }
+
+  .type-strength { background: rgba(255,94,58,0.15); color: var(--accent2); border: 1px solid rgba(255,94,58,0.3); }
+  .type-olympic { background: rgba(232,255,71,0.12); color: var(--accent); border: 1px solid rgba(232,255,71,0.3); }
+  .type-hit { background: rgba(58,232,255,0.12); color: var(--accent3); border: 1px solid rgba(58,232,255,0.3); }
+  .type-rest { background: rgba(100,100,100,0.1); color: var(--muted); border: 1px solid var(--border); }
+  .type-combo { background: rgba(255,204,0,0.12); color: var(--yellow); border: 1px solid rgba(255,204,0,0.3); }
+
+  .day-body { padding: 14px 16px; }
+
+  .focus-line {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    color: var(--muted);
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    margin-bottom: 10px;
+  }
+
+  .workout-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 18px;
+    color: var(--text);
+    margin-bottom: 10px;
+    letter-spacing: 1px;
+  }
+
+  .workout-blocks { display: flex; flex-direction: column; gap: 8px; }
+
+  .block {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 10px 12px;
+  }
+
+  .block-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 6px;
+  }
+
+  .block-content {
+    font-size: 12px;
+    line-height: 1.7;
+    color: #ccc;
+  }
+
+  .block-content strong { color: var(--text); font-weight: 600; }
+
+  /* Log section */
+  .log-section {
+    margin-top: 12px;
+    padding-top: 12px;
+    border-top: 1px solid var(--border);
+  }
+
+  .log-title {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 8px;
+  }
+
+  .log-fields { display: flex; flex-direction: column; gap: 6px; }
+
+  .log-field {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 12px;
+  }
+
+  .log-field label {
+    color: var(--muted);
+    min-width: 90px;
+    font-size: 11px;
+  }
+
+  .log-field input, .log-field textarea, .log-field select {
+    flex: 1;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 3px;
+    color: var(--text);
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    padding: 5px 8px;
+    transition: border-color 0.2s;
+  }
+
+  .log-field input:focus, .log-field textarea:focus, .log-field select:focus {
+    outline: none;
+    border-color: var(--accent);
+  }
+
+  .log-field textarea { resize: vertical; min-height: 40px; }
+
+  .btn-log {
+    margin-top: 8px;
+    width: 100%;
+    padding: 8px;
+    background: transparent;
+    border: 1px solid var(--accent);
+    color: var(--accent);
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    border-radius: 3px;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .btn-log:hover { background: var(--accent); color: #000; }
+
+  .btn-log.logged {
+    background: rgba(76,255,145,0.1);
+    border-color: var(--green);
+    color: var(--green);
+  }
+
+  /* Targets panel */
+  .targets-panel {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 24px;
+    margin-bottom: 32px;
+  }
+
+  .targets-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    margin-bottom: 20px;
+  }
+
+  .targets-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 28px;
+    letter-spacing: 2px;
+    color: var(--accent);
+  }
+
+  .targets-sub {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+
+  .targets-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 12px;
+  }
+
+  .target-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 14px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .target-card::before {
+    content: '';
+    position: absolute;
+    left: 0; top: 0; bottom: 0;
+    width: 3px;
+    background: var(--accent2);
+  }
+
+  .target-card.olympic::before { background: var(--accent); }
+  .target-card.cardio::before { background: var(--accent3); }
+  .target-card.body::before { background: var(--yellow); }
+
+  .tc-lift {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 6px;
+  }
+
+  .tc-current {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 28px;
+    color: var(--text);
+    line-height: 1;
+  }
+
+  .tc-arrow { color: var(--muted); font-size: 16px; margin: 0 4px; }
+
+  .tc-target {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 28px;
+    color: var(--accent2);
+    line-height: 1;
+  }
+
+  .target-card.olympic .tc-target { color: var(--accent); }
+  .target-card.cardio .tc-target { color: var(--accent3); }
+  .target-card.body .tc-target { color: var(--yellow); }
+
+  .tc-unit { font-size: 14px; color: var(--muted); margin-left: 2px; }
+
+  .tc-progress-bar {
+    height: 3px;
+    background: var(--border);
+    border-radius: 2px;
+    margin-top: 8px;
+    overflow: hidden;
+  }
+
+  .tc-progress-fill {
+    height: 100%;
+    background: var(--accent2);
+    border-radius: 2px;
+    transition: width 0.5s ease;
+  }
+
+  .target-card.olympic .tc-progress-fill { background: var(--accent); }
+  .target-card.cardio .tc-progress-fill { background: var(--accent3); }
+  .target-card.body .tc-progress-fill { background: var(--yellow); }
+
+  /* Stats row */
+  .stats-row {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+    gap: 12px;
+    margin-bottom: 28px;
+  }
+
+  .stat-box {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 16px;
+    text-align: center;
+  }
+
+  .stat-val {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 36px;
+    color: var(--accent);
+    line-height: 1;
+  }
+
+  .stat-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-top: 4px;
+  }
+
+  /* Initial setup modal */
+  .modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.85);
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    backdrop-filter: blur(4px);
+  }
+
+  .modal {
+    background: var(--card);
+    border: 1px solid var(--accent);
+    border-radius: 8px;
+    padding: 32px;
+    max-width: 500px;
+    width: 100%;
+    max-height: 80vh;
+    overflow-y: auto;
+  }
+
+  .modal-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 36px;
+    color: var(--accent);
+    letter-spacing: 2px;
+    margin-bottom: 6px;
+  }
+
+  .modal-sub {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    color: var(--muted);
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    margin-bottom: 24px;
+  }
+
+  .modal-fields { display: flex; flex-direction: column; gap: 14px; }
+
+  .mf-group label {
+    display: block;
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 6px;
+  }
+
+  .mf-group input {
+    width: 100%;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 3px;
+    color: var(--text);
+    font-family: 'DM Mono', monospace;
+    font-size: 13px;
+    padding: 10px 12px;
+    transition: border-color 0.2s;
+  }
+
+  .mf-group input:focus { outline: none; border-color: var(--accent); }
+
+  .mf-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+
+  .btn-start {
+    margin-top: 24px;
+    width: 100%;
+    padding: 14px;
+    background: var(--accent);
+    border: none;
+    border-radius: 4px;
+    color: #000;
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 20px;
+    letter-spacing: 2px;
+    cursor: pointer;
+    transition: opacity 0.2s;
+  }
+
+  .btn-start:hover { opacity: 0.9; }
+
+  .note-box {
+    background: rgba(232,255,71,0.05);
+    border: 1px solid rgba(232,255,71,0.2);
+    border-radius: 4px;
+    padding: 12px;
+    font-size: 12px;
+    color: var(--muted);
+    line-height: 1.6;
+    margin-top: 8px;
+  }
+
+  /* Rest day */
+  .rest-content {
+    padding: 20px 16px;
+    text-align: center;
+    color: var(--muted);
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 1px;
+  }
+
+  /* Scrollbar */
+  ::-webkit-scrollbar { width: 6px; height: 6px; }
+  ::-webkit-scrollbar-track { background: var(--bg); }
+  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+  ::-webkit-scrollbar-thumb:hover { background: var(--muted2); }
+
+  .check-icon { color: var(--green); font-size: 14px; margin-left: 6px; }
+
+  .section-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 22px;
+    letter-spacing: 2px;
+    color: var(--text);
+    margin-bottom: 14px;
+  }
+
+  .section-rule {
+    height: 1px;
+    background: var(--border);
+    margin: 28px 0;
+  }
+
+  .btn-reset {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: var(--muted);
+    background: none;
+    border: 1px solid var(--border);
+    border-radius: 3px;
+    padding: 6px 12px;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .btn-reset:hover { border-color: var(--accent2); color: var(--accent2); }
+
+  @media (max-width: 600px) {
+    .logo { font-size: 36px; }
+    .week-grid { grid-template-columns: 1fr; }
+    .mf-row { grid-template-columns: 1fr; }
+    .targets-grid { grid-template-columns: 1fr 1fr; }
+  }
 </style>
 </head>
 <body>
 
-<div class="header">
-  <div class="header-left">
-    <h1>Section 43 — Indicator Ownership</h1>
-    <p>511 IAC 6.2-12-43 · Student Success Indicators</p>
-  </div>
-  <div class="filter-area">
-    <div class="role-toggle">
-      <button class="role-btn active" id="btn-owner" onclick="setMode('owner')">Business Owner</button>
-      <button class="role-btn" id="btn-sponsor" onclick="setMode('sponsor')">Exec Sponsor</button>
+<!-- SETUP MODAL -->
+<div class="modal-overlay" id="setupModal">
+  <div class="modal">
+    <div class="modal-title">BEFORE WE BEGIN</div>
+    <div class="modal-sub">Enter your starting numbers — we'll set your Month 1 targets</div>
+    <div class="modal-fields">
+      <div class="mf-row">
+        <div class="mf-group">
+          <label>Back Squat 1RM (lbs)</label>
+          <input type="number" id="s_squat" placeholder="e.g. 185">
+        </div>
+        <div class="mf-group">
+          <label>Deadlift 1RM (lbs)</label>
+          <input type="number" id="s_deadlift" placeholder="e.g. 225">
+        </div>
+      </div>
+      <div class="mf-row">
+        <div class="mf-group">
+          <label>Press / Push Press 1RM (lbs)</label>
+          <input type="number" id="s_press" placeholder="e.g. 115">
+        </div>
+        <div class="mf-group">
+          <label>Power Clean 1RM (lbs)</label>
+          <input type="number" id="s_clean" placeholder="e.g. 135">
+        </div>
+      </div>
+      <div class="mf-row">
+        <div class="mf-group">
+          <label>Hang Snatch 1RM (lbs)</label>
+          <input type="number" id="s_snatch" placeholder="e.g. 75">
+        </div>
+        <div class="mf-group">
+          <label>Max Pull-Ups (unbroken)</label>
+          <input type="number" id="s_pullups" placeholder="e.g. 8">
+        </div>
+      </div>
+      <div class="mf-row">
+        <div class="mf-group">
+          <label>400m Run Time (seconds)</label>
+          <input type="number" id="s_run400" placeholder="e.g. 120">
+        </div>
+        <div class="mf-group">
+          <label>1-Mile Bike (minutes)</label>
+          <input type="number" id="s_bike" placeholder="e.g. 4">
+        </div>
+      </div>
+      <div class="note-box">
+        💡 If you don't know a number, leave it blank — we'll fill it with a safe beginner estimate. All working weights in the plan will be based on % of your 1RM. You can update these any time.
+      </div>
     </div>
-    <span class="filter-label">Filter by</span>
-    <div class="person-pills" id="pills"></div>
-    <div class="legend">
-      <div class="legend-item"><div class="legend-dot leg-owner"></div> Owner</div>
-      <div class="legend-item"><div class="legend-dot leg-sponsor"></div> Sponsor</div>
-    </div>
+    <button class="btn-start" onclick="startPlan()">BUILD MY PLAN →</button>
   </div>
 </div>
 
-<div class="stats-bar" id="stats-bar">
-  <span>Showing all <span class="count">27</span> indicators</span>
-</div>
-
-<div class="main" id="main"></div>
-
-<div class="overlay" id="overlay" onclick="closeDrawer()"></div>
-
-<div class="drawer" id="drawer">
-  <div class="drawer-header">
-    <button class="drawer-close" onclick="closeDrawer()">✕</button>
-    <div class="drawer-grade-tag" id="d-grade"></div>
-    <div class="drawer-id" id="d-id"></div>
-    <div class="drawer-title" id="d-title"></div>
-    <div class="drawer-summary" id="d-summary"></div>
-    <div class="drawer-people" id="d-people"></div>
-  </div>
-  <div class="drawer-body">
-
-    <!-- Links -->
-    <div class="dsection">
-      <div class="dsection-title">🔗 Links &amp; Files</div>
-      <div class="link-list" id="link-list"></div>
-      <div class="add-row">
-        <input class="dinput" id="link-label-input" placeholder="Label (e.g. Guidance Doc)" style="flex:1.1" />
-        <input class="dinput" id="link-url-input" placeholder="Paste Google Drive or any URL" style="flex:2" />
-        <button class="dbtn" onclick="addLink()">+ Add</button>
+<!-- MAIN APP -->
+<div class="container">
+  <header>
+    <div class="header-inner">
+      <div>
+        <div class="logo">CROSS<span>FIT</span> COMEBACK</div>
+        <div class="tagline">Month 1 — Strength / Olympic / HIIT</div>
       </div>
-    </div>
-
-    <!-- Action Items -->
-    <div class="dsection">
-      <div class="dsection-title">✅ Action Items</div>
-      <div class="action-list" id="action-list"></div>
-      <div class="add-row">
-        <input class="dinput" id="action-input" placeholder="Add an action item…" onkeydown="if(event.key==='Enter')addAction()" />
-        <button class="dbtn" onclick="addAction()">+ Add</button>
-      </div>
-    </div>
-
-    <!-- Comments -->
-    <div class="dsection">
-      <div class="dsection-title">💬 Comments</div>
-      <div class="comment-list" id="comment-list"></div>
-      <div class="comment-form">
-        <input class="dinput" id="comment-name" placeholder="Your name" style="max-width:200px" />
-        <textarea class="dtextarea" id="comment-text" placeholder="Write a note or comment…"></textarea>
-        <div class="submit-row">
-          <button class="dbtn" onclick="addComment()">Post Comment</button>
+      <div class="header-stats">
+        <div class="hstat">
+          <div class="hstat-val" id="hstat-done">0</div>
+          <div class="hstat-label">Workouts Done</div>
+        </div>
+        <div class="hstat">
+          <div class="hstat-val" id="hstat-total">24</div>
+          <div class="hstat-label">Total Workouts</div>
+        </div>
+        <div class="hstat">
+          <div class="hstat-val" id="hstat-streak">0</div>
+          <div class="hstat-label">Day Streak</div>
         </div>
       </div>
     </div>
+    <div id="syncStatus" style="font-family:'DM Mono',monospace;font-size:11px;color:var(--muted);letter-spacing:1px;margin-top:8px;transition:opacity 1s ease;opacity:0;">☁️ Synced</div>
+  </header>
 
+  <!-- Progress -->
+  <div class="month-progress">
+    <div class="progress-label">Month Progress</div>
+    <div class="progress-bar-wrap">
+      <div class="progress-bar-fill" id="monthProgressBar" style="width:0%"></div>
+    </div>
+    <div class="progress-pct" id="monthProgressPct">0%</div>
   </div>
+
+  <!-- Targets -->
+  <div class="targets-panel">
+    <div class="targets-header">
+      <div>
+        <div class="targets-title">END-OF-MONTH TARGETS</div>
+        <div class="targets-sub">Based on your starting numbers — update as you log PRs</div>
+      </div>
+      <button class="btn-reset" onclick="resetSetup()">↺ Re-Enter Baselines</button>
+    </div>
+    <div class="targets-grid" id="targetsGrid"></div>
+  </div>
+
+  <!-- Stats -->
+  <div class="stats-row">
+    <div class="stat-box"><div class="stat-val" id="st-strength">0</div><div class="stat-label">Strength Days</div></div>
+    <div class="stat-box"><div class="stat-val" id="st-olympic">0</div><div class="stat-label">Olympic Days</div></div>
+    <div class="stat-box"><div class="stat-val" id="st-hit">0</div><div class="stat-label">HIIT Days</div></div>
+    <div class="stat-box"><div class="stat-val" id="st-rest">0</div><div class="stat-label">Rest Days</div></div>
+    <div class="stat-box"><div class="stat-val" id="st-prs">0</div><div class="stat-label">PRs Logged</div></div>
+  </div>
+
+  <!-- Week Tabs -->
+  <div class="week-tabs" id="weekTabs"></div>
+
+  <!-- Week Grid -->
+  <div class="week-grid" id="weekGrid"></div>
+
 </div>
 
 <script>
-const RAW = [
-  {grade:"GRADE 3",cls:"grade-3",items:[
-    {id:"43(b)(1)(A)",title:"Statewide Literacy Assessment Passing Score by End of Grade 3",summary:"Student scores at or above the proficiency threshold on the statewide literacy assessment by the end of Grade 3, including the summer retest window.",owners:["Melanie Hazelwood","Lynn Schemel"],sponsors:["Anna Shults"]},
-    {id:"43(b)(1)(B)",title:"Literacy Passing Score for Grade 2 'Off-Track' Students",summary:"For a student who received an 'off-track' designation on the statewide literacy assessment in Grade 2, the student achieves a passing score on the statewide literacy assessment by the end of Grade 3, including the summer retest window.",owners:["Melanie Hazelwood","Lynn Schemel"],sponsors:["Anna Shults"]},
-    {id:"43(b)(1)(C)",title:"Attendance Target",summary:"Student meets the attendance target of being present for at least 94% of instructional days while enrolled during the accountable year.",owners:["Stephen Balko"],sponsors:["Ron Sandlin"]},
-    {id:"43(b)(1)(D)",title:"English Learner: Expected Growth or Language Proficiency (WIDA ACCESS)",summary:"For students identified as English learners, the student meets expected growth or reaches language proficiency on the WIDA Consortium ACCESS assessment.",owners:["Chelsea Isley","Lynn Schemel"],sponsors:["Nicole Thompson"]},
-  ]},
-  {grade:"GRADES 4–8",cls:"grade-48",items:[
-    {id:"43(b)(2)(A)",title:"Typical Academic Growth (SGP ≥ 45)",summary:"Student achieves a student growth percentile of 45 or greater on the mandatory assessment, calculated separately for ELA and math.",owners:["Vanessa Deveau Bachle","Lynn Schemel","Melanie Hazelwood"],sponsors:["Ron Sandlin","Anna Shults"]},
-    {id:"43(b)(2)(B)",title:"Accelerated Academic Growth (SGP ≥ 65)",summary:"Student achieves a student growth percentile of 65 or greater on the mandatory assessment, calculated separately for ELA and math.",owners:["Vanessa Deveau Bachle","Lynn Schemel","Melanie Hazelwood"],sponsors:["Ron Sandlin","Anna Shults"]},
-    {id:"43(b)(2)(C)",title:"Excellent Academic Growth (Individual Growth Target)",summary:"For students in Steps Three and Five of Section 44(d) during the accountable year, the student achieves the individual student growth target set for that student.",owners:["Vanessa Deveau Bachle","Lynn Schemel"],sponsors:["Ron Sandlin","Anna Shults"]},
-    {id:"43(b)(2)(D)",title:"Attendance Target",summary:"Student meets the attendance target of being present for at least 94% of instructional days while enrolled during the accountable year.",owners:["Stephen Balko"],sponsors:["Ron Sandlin"]},
-    {id:"43(b)(2)(E)",title:"Social Studies Assessment Passing Score",summary:"Student achieves a passing score at or above the proficiency threshold on the mandatory social studies assessment.",owners:["Lynn Schemel"],sponsors:["Anna Shults"]},
-    {id:"43(b)(2)(F)",title:"Science Assessment Passing Score",summary:"Student achieves a passing score at or above the proficiency threshold on the mandatory science assessment.",owners:["Lynn Schemel","Shellie Hartford"],sponsors:["Anna Shults"]},
-    {id:"43(b)(2)(G)",title:"Employability Skills Assessment",summary:"Student achieves a passing score on an assessment approved by the board measuring employability skills (applicable only if a valid and reliable assessment exists).",owners:["Rebekah Frazer"],sponsors:["Ron Sandlin"]},
-    {id:"43(b)(2)(H)",title:"Statewide Literacy Assessment Passing Score (Previously Not Passing)",summary:"For a student who previously took the statewide literacy assessment and has not achieved a passing score, the student achieves a passing score at or above the proficiency threshold.",owners:["Melanie Hazelwood","Lynn Schemel"],sponsors:["Anna Shults"]},
-    {id:"43(b)(2)(I)",title:"Graduation Plan Completion (Grade 7)",summary:"For Grade 7 students, the student completes the graduation plan described in IC 20-30-4 by the end of the school year, with written approval by a parent or guardian.",owners:["Rebekah Frazer"],sponsors:["Ron Sandlin"]},
-    {id:"43(b)(2)(J)",title:"Advanced Coursework (Grade 8: 2 Credits, C or Higher)",summary:"For Grade 8 students, the student completes two (2) credits of advanced coursework with a grade of C or higher across Grade 7 and/or Grade 8, including the summer immediately following Grade 8.",owners:["Shellie Hartford"],sponsors:["Anna Shults"]},
-    {id:"43(b)(2)(K)",title:"English Learner: Expected Growth or Language Proficiency (WIDA ACCESS)",summary:"For students identified as English learners, the student meets expected growth or reaches language proficiency on the WIDA Consortium ACCESS assessment.",owners:["Chelsea Isley","Lynn Schemel"],sponsors:["Nicole Thompson"]},
-    {id:"43(b)(2)(L)",title:"Classical Learning Test (CLT) Passing Score (Grades 3–8)",summary:"Student achieves a passing score on the reading, grammar/writing, or quantitative reasoning portion of the Grade 3–8 CLT, if the CLT meets requirements for a valid and reliable assessment under federal law.",owners:["Lynn Schemel"],sponsors:["Anna Shults"]},
-  ]},
-  {grade:"GRADE 10",cls:"grade-10",items:[
-    {id:"43(b)(3)(A)",title:"Attendance Target (Grade 9 or 10)",summary:"Student meets the attendance target of being present for at least 94% of instructional days in Grade 9 or Grade 10 during the accountable year.",owners:["Stephen Balko"],sponsors:["Ron Sandlin"]},
-    {id:"43(b)(3)(B)",title:"PSAT/NMSQT College Ready Benchmark",summary:"Student achieves the aggregate national college ready benchmark established for the PSAT/NMSQT assessment.",owners:["Lynn Schemel","Shellie Hartford","Melanie Hazelwood"],sponsors:["Anna Shults"]},
-    {id:"43(b)(3)(C)",title:"Biology End of Course Assessment Passing Score",summary:"Student achieves a passing score at or above the proficiency threshold on the mandatory biology assessment.",owners:["Lynn Schemel","Shellie Hartford"],sponsors:["Anna Shults"]},
-    {id:"43(b)(3)(D)",title:"Dual Credit / AP / IB / Cambridge or CTE Principles Course (2 Credits, C or Higher)",summary:"Student completes two (2) credits of dual credit, AP, IB, or Cambridge coursework OR two (2) credits of CTE principles-level coursework with a grade of C or higher by end of Grade 10 including summer prior to Grade 11.",owners:["Kelly Connelly","Rebekah Frazer","Sam Rourke"],sponsors:["Anna Shults","Ron Sandlin","Michelle Ashcraft"]},
-    {id:"43(b)(3)(E)",title:"CTE Coursework Sequence (3+ Non-Duplicative Courses Including 1 Advanced)",summary:"Student completes at least three (3) non-duplicative CTE courses with a C average or higher, including at least one advanced CTE course, by end of Grade 10 including summer prior to Grade 11.",owners:["Sam Rourke"],sponsors:["Michelle Ashcraft"]},
-    {id:"43(b)(3)(F)",title:"English Learner: Expected Growth or Language Proficiency (WIDA ACCESS)",summary:"For students identified as English learners, the student meets expected growth or reaches language proficiency on the WIDA Consortium ACCESS assessment in Grade 9 or Grade 10.",owners:["Chelsea Isley","Lynn Schemel"],sponsors:["Nicole Thompson"]},
-  ]},
-  {grade:"GRADE 12",cls:"grade-12",items:[
-    {id:"43(b)(4)(A)",title:"College Ready Math Benchmark (ACT, CLT, or Other Board-Recognized Exam)",summary:"Student achieves the college ready benchmark established by the board for the mathematics section of the ACT, the quantitative reasoning section of the CLT, or any other board-recognized college entrance exam.",owners:["Lynn Schemel"],sponsors:["Anna Shults"]},
-    {id:"43(b)(4)(B)",title:"College Ready English Benchmark (ACT, CLT, or Other Board-Recognized Exam)",summary:"Student achieves the college ready benchmark established by the board for the English section of the ACT, the verbal reasoning section of the CLT, or any other board-recognized college entrance exam.",owners:["Lynn Schemel"],sponsors:["Anna Shults"]},
-    {id:"43(b)(4)(C)",title:"Biology End of Course Assessment Passing Score",summary:"Student achieves a passing score at or above the proficiency threshold on the mandatory biology assessment.",owners:["Lynn Schemel","Shellie Hartford"],sponsors:["Anna Shults"]},
-    {id:"43(b)(4)(D)",title:"U.S. Government Course Final Exam Passing Score",summary:"Student achieves a passing score at or above the proficiency threshold on the U.S. Government course final exam at any point prior to graduation.",owners:["Lynn Schemel"],sponsors:["Anna Shults"]},
-    {id:"43(b)(4)(E)",title:"Attendance Target (Grade 11 or 12)",summary:"Student meets the attendance target of being present for at least 94% of instructional days in Grade 11 or Grade 12 during the accountable year.",owners:["Stephen Balko"],sponsors:["Ron Sandlin"]},
-    {id:"43(b)(4)(F)",title:"College and Career Coursework Requirement",summary:"Student completes at least one of the college and career course requirements outlined in 511 IAC 6-7.2-21(b)(1)(G), excluding subclauses (v) and (vi).",owners:["Kelly Connelly","Rebekah Frazer"],sponsors:["Anna Shults","Ron Sandlin"]},
-    {id:"43(b)(4)(G)",title:"Work-Based Learning (150 Hours)",summary:"Student completes one hundred fifty (150) hours of work-based learning as defined in 511 IAC 6-7.2-17.",owners:["Sam Rourke"],sponsors:["Michelle Ashcraft"]},
-    {id:"43(b)(4)(H)",title:"Credential of Value",summary:"Student earns a credential of value as defined in 511 IAC 6-7.2-21(b)(2)(B)(i) and 511 IAC 6-7.2-21(b)(3)(A)(i).",owners:["Sam Rourke"],sponsors:["Michelle Ashcraft"]},
-    {id:"43(b)(4)(I)",title:"English Learner: Expected Growth or Language Proficiency (WIDA ACCESS)",summary:"For students identified as English learners, the student meets expected growth or reaches language proficiency on the WIDA Consortium ACCESS assessment in Grade 11 or Grade 12.",owners:["Chelsea Isley","Lynn Schemel"],sponsors:["Nicole Thompson"]},
-  ]},
+// ============================================================
+// DATA
+// ============================================================
+
+const PLAN = [
+  // WEEK 1 — Re-Intro, Movement Quality
+  {week:1, day:1, name:"Monday", type:"strength", typeLabel:"Strength", focus:"Lower Body – Squat Pattern",
+    wod:"BACK TO BASICS",
+    blocks:[
+      {label:"Warmup", content:"<strong>10 min</strong> — Row or Bike easy Z1 + hip circles, leg swings, 10 air squats, 10 goblet squats (light KB)"},
+      {label:"Skill / Strength", content:"<strong>Back Squat</strong> — 5×5 @ 60% 1RM. Rest 2:30 between sets. Focus on depth and bracing."},
+      {label:"Accessory", content:"<strong>Romanian Deadlift</strong> — 3×10 @ light-moderate (65 lbs or KB). Slow eccentric (3 sec down)."},
+      {label:"MetCon", content:"<strong>3 Rounds for time:</strong><br>• 15 KB Swings (1.5 pood / 53 lbs)<br>• 12 Box Step-Ups (use bench, 24″ equiv)<br>• 200m Run"}
+    ],
+    logFields:["Back Squat Weight Used (lbs)", "MetCon Time (mm:ss)", "Notes / How You Felt"]},
+
+  {week:1, day:2, name:"Tuesday", type:"olympic", typeLabel:"Olympic", focus:"Upper Pull + Power Clean Intro",
+    wod:"CLEAN SLATE",
+    blocks:[
+      {label:"Warmup", content:"<strong>8 min</strong> — Banded pull-aparts 3×15, lat stretch, PVC pass-throughs, shoulder circles"},
+      {label:"Skill", content:"<strong>Power Clean</strong> — Technique work. 5×3 @ 50–60% 1RM. Reset each rep. Cues: pull under, high elbows."},
+      {label:"Strength", content:"<strong>Strict Pull-Ups</strong> — 4×max (use band if needed). Rest 2 min. Then: 3×10 Banded Lat Pulldown."},
+      {label:"MetCon", content:"<strong>EMOM 12:</strong><br>Min 1: 5 Power Cleans (light — 50%)<br>Min 2: 8 Pull-Ups (banded OK)<br>Min 3: 10 KB Deadlifts"}
+    ],
+    logFields:["Power Clean Weight (lbs)", "Pull-Ups Per Set (e.g. 6/5/4/4)", "MetCon Notes"]},
+
+  {week:1, day:3, name:"Wednesday", type:"rest", typeLabel:"Rest", focus:"Active Recovery", wod:null, blocks:[], logFields:[]},
+
+  {week:1, day:4, name:"Thursday", type:"hit", typeLabel:"HIIT", focus:"Posterior Chain + Conditioning",
+    wod:"DIESEL",
+    blocks:[
+      {label:"Warmup", content:"<strong>8 min</strong> — Treadmill walk → jog → strides. Hip flexor stretch, glute bridges 2×15."},
+      {label:"Strength", content:"<strong>Deadlift</strong> — 4×5 @ 65% 1RM. Hook grip. Rest 2:30. Focus on hip hinge, not squat."},
+      {label:"HIIT MetCon", content:"<strong>4 Rounds:</strong><br>• :30 Assault Bike / Peloton sprint (max effort)<br>• :30 Rest<br>• 10 KB American Swings<br>• 10 Banded Good Mornings<br>• 1 min Rest"},
+      {label:"Finisher", content:"3×12 Banded Hamstring Curls + 2×15 Glute Bridges"}
+    ],
+    logFields:["Deadlift Weight Used (lbs)", "Avg Bike Output/RPM", "Notes"]},
+
+  {week:1, day:5, name:"Friday", type:"combo", typeLabel:"Strength+Olympic", focus:"Upper Push + Hang Snatch",
+    wod:"OVERHEAD PROJECT",
+    blocks:[
+      {label:"Warmup", content:"<strong>10 min</strong> — PVC overhead squat, snatch balance with empty bar, band pull-aparts, 10 push-ups."},
+      {label:"Skill", content:"<strong>Hang Power Snatch</strong> — 5×3 @ 50% 1RM. Tall catch, active shoulder. Reset each rep."},
+      {label:"Strength", content:"<strong>Push Press</strong> — 4×5 @ 65% 1RM. Then: <strong>Strict Press</strong> 3×8 @ 50% 1RM."},
+      {label:"MetCon", content:"<strong>For Time:</strong><br>21-15-9:<br>• Push Press (75/55 lbs)<br>• KB Sumo Deadlift High Pull (53/35 lbs)<br>• Ring/Band Rows"}
+    ],
+    logFields:["Hang Snatch Weight (lbs)", "Push Press Weight (lbs)", "MetCon Time (mm:ss)", "Notes"]},
+
+  {week:1, day:6, name:"Saturday", type:"hit", typeLabel:"HIIT", focus:"Full Body — Longer Aerobic Effort",
+    wod:"SATURDAY GRIND",
+    blocks:[
+      {label:"Warmup", content:"<strong>10 min</strong> — Easy Peloton + dynamic stretching full body."},
+      {label:"Chipper MetCon", content:"<strong>For Time (20 min cap):</strong><br>• 400m Run<br>• 30 KB Swings<br>• 20 Pull-Ups<br>• 30 Box Step-Ups<br>• 20 KB Goblet Squats<br>• 400m Run<br>• 30 Push-Ups"},
+      {label:"Cool Down", content:"<strong>15 min</strong> — Peloton easy spin + full body stretching: pigeon, doorway chest stretch, lat stretch."}
+    ],
+    logFields:["Total Time (mm:ss)", "Modifications Used", "Overall RPE (1-10)", "Notes"]},
+
+  {week:1, day:7, name:"Sunday", type:"rest", typeLabel:"Rest", focus:"Full Rest / Mobility", wod:null, blocks:[], logFields:[]},
+
+  // WEEK 2 — Building Load
+  {week:2, day:8, name:"Monday", type:"strength", typeLabel:"Strength", focus:"Lower Body – Squat + Front Squat Intro",
+    wod:"DEPTH CHARGE",
+    blocks:[
+      {label:"Warmup", content:"<strong>10 min</strong> — Bike + goblet squat holds, ankle mobility, hip circles, 10 air squats."},
+      {label:"Strength A", content:"<strong>Back Squat</strong> — 5×5 @ 65% 1RM. Rest 2:30."},
+      {label:"Strength B", content:"<strong>Front Squat</strong> — 3×5 @ 50% Back Squat 1RM. Practice the rack position."},
+      {label:"MetCon", content:"<strong>AMRAP 10:</strong><br>• 5 Front Squats (light — 55–65 lbs)<br>• 10 KB Swings<br>• 15 Air Squats"}
+    ],
+    logFields:["Back Squat Weight (lbs)", "Front Squat Weight (lbs)", "AMRAP Rounds+Reps", "Notes"]},
+
+  {week:2, day:9, name:"Tuesday", type:"olympic", typeLabel:"Olympic", focus:"Power Clean + Jerk",
+    wod:"CLEAN & JERK PRIMER",
+    blocks:[
+      {label:"Warmup", content:"<strong>8 min</strong> — PVC clean drills, burgener warm-up, 2 min jump rope."},
+      {label:"Skill A", content:"<strong>Power Clean</strong> — 5×3 @ 60% 1RM. Add 5–10 lbs from Week 1 if form was solid."},
+      {label:"Skill B", content:"<strong>Push Jerk</strong> — 4×3 @ 60% 1RM. Focus on the dip and drive. Split jerk optional."},
+      {label:"MetCon", content:"<strong>Every 3:00 × 5 Rounds:</strong><br>• 3 Power Clean + Jerk (65% 1RM)<br>• 6 Pull-Ups<br>• 9 Box Step-Ups"}
+    ],
+    logFields:["Clean Weight (lbs)", "Jerk Weight (lbs)", "Rounds Completed", "Notes"]},
+
+  {week:2, day:10, name:"Wednesday", type:"rest", typeLabel:"Rest", focus:"Active Recovery", wod:null, blocks:[], logFields:[]},
+
+  {week:2, day:11, name:"Thursday", type:"hit", typeLabel:"HIIT", focus:"Deadlift + Posterior Chain MetCon",
+    wod:"IRON POSTERIOR",
+    blocks:[
+      {label:"Warmup", content:"<strong>8 min</strong> — Treadmill jog 5 min, Romanian Deadlift with PVC, lat stretch."},
+      {label:"Strength", content:"<strong>Deadlift</strong> — 4×5 @ 70% 1RM. Rest 2:30. No touch-and-go — reset each rep."},
+      {label:"HIIT MetCon", content:"<strong>Tabata (8 rounds :20/:10) — 4 movements, 2 rounds each:</strong><br>• KB Swings<br>• Burpees<br>• KB Deadlifts<br>• Treadmill Sprint"},
+      {label:"Accessory", content:"3×10 Single-Leg Romanian Deadlift (KB) each side"}
+    ],
+    logFields:["Deadlift Weight (lbs)", "Tabata Score (min reps per movement)", "Notes"]},
+
+  {week:2, day:12, name:"Friday", type:"combo", typeLabel:"Strength+Olympic", focus:"Press + Snatch Complex",
+    wod:"THE OVERHEAD COMPLEX",
+    blocks:[
+      {label:"Warmup", content:"<strong>10 min</strong> — Banded shoulder warmup, OHS with PVC, 10 push press with bar."},
+      {label:"Strength", content:"<strong>Bench Press</strong> — 4×5 @ 65% Press 1RM (sub for push press). Rest 2 min."},
+      {label:"Skill", content:"<strong>Hang Snatch Complex</strong> — 4×(1 Hang Snatch + 1 OHS) @ 55–60% 1RM."},
+      {label:"MetCon", content:"<strong>5 Rounds for Quality:</strong><br>• 5 Hang Snatches (light, feel fast)<br>• 8 Ring Rows / Banded Rows<br>• 10 DB/KB Press<br>Rest 1:30"}
+    ],
+    logFields:["Bench Press Weight (lbs)", "Hang Snatch Weight (lbs)", "Notes / Form Cues"]},
+
+  {week:2, day:13, name:"Saturday", type:"hit", typeLabel:"HIIT", focus:"Benchmark — Total Body",
+    wod:"\"FRAN-STEIN\" (Scaled)",
+    blocks:[
+      {label:"Warmup", content:"<strong>10 min</strong> — Peloton easy + kip practice, empty bar thrusters, shoulder warmup."},
+      {label:"Benchmark WOD", content:"<strong>For Time:</strong><br>21-15-9:<br>• Thrusters (65/45 lbs — use bar + plates)<br>• Pull-Ups (banded OK)<br><br><em>Target: under 12 min at this stage.</em>"},
+      {label:"Extra Work", content:"<strong>3 Rounds:</strong><br>• 10 KB Goblet Squat<br>• 10 Push-Ups<br>• 200m Treadmill Run"}
+    ],
+    logFields:["Fran-Stein Time (mm:ss)", "Thruster Weight Used (lbs)", "Pull-Up Band Used", "Notes"]},
+
+  {week:2, day:14, name:"Sunday", type:"rest", typeLabel:"Rest", focus:"Full Rest / Mobility", wod:null, blocks:[], logFields:[]},
+
+  // WEEK 3 — Intensity Up
+  {week:3, day:15, name:"Monday", type:"strength", typeLabel:"Strength", focus:"Lower Body – Heavy Squat Week",
+    wod:"HEAVY LEGS",
+    blocks:[
+      {label:"Warmup", content:"<strong>10 min</strong> — Bike + deep squat holds 30s, banded clamshells 2×15, hip flexor stretch."},
+      {label:"Strength", content:"<strong>Back Squat</strong> — 6×3 @ 75% 1RM. Rest 3 min. Push depth and speed out of the hole."},
+      {label:"Accessory", content:"<strong>Bulgarian Split Squat</strong> — 3×8 each side. Use KB or bands for resistance."},
+      {label:"MetCon", content:"<strong>For Time (15 min cap):</strong><br>• 50 Wall Balls (sub: 50 KB Goblet Squat Jumps)<br>• 40 Box Step-Ups<br>• 30 KB Swings<br>• 20 Burpees"}
+    ],
+    logFields:["Back Squat Weight (lbs)", "MetCon Time (mm:ss)", "RPE (1-10)", "Notes"]},
+
+  {week:3, day:16, name:"Tuesday", type:"olympic", typeLabel:"Olympic", focus:"Power Clean — Heavier Singles",
+    wod:"CLEAN HEAT",
+    blocks:[
+      {label:"Warmup", content:"<strong>8 min</strong> — Row or Bike easy. Banded hip activation. 3×3 clean pulls with light bar."},
+      {label:"Skill/Lift", content:"<strong>Power Clean</strong> — Work to a heavy triple (3RM attempt). Build in sets of 3 over 15 min. Then: 3×3 @ 85% of today's 3RM."},
+      {label:"Strength", content:"<strong>Weighted Pull-Ups</strong> — 4×3–5. Use a KB between feet or resistance band. Rest 2 min."},
+      {label:"MetCon", content:"<strong>EMOM 15:</strong><br>Min 1: 4 Power Cleans (75% 1RM)<br>Min 2: 6 CTB / Strict Pull-Ups<br>Min 3: 12 KB Swings"}
+    ],
+    logFields:["Clean 3RM Today (lbs)", "Weighted Pull-Up Load (lbs)", "EMOM Completed? (Y/N)", "Notes"]},
+
+  {week:3, day:17, name:"Wednesday", type:"rest", typeLabel:"Rest", focus:"Active Recovery", wod:null, blocks:[], logFields:[]},
+
+  {week:3, day:18, name:"Thursday", type:"hit", typeLabel:"HIIT", focus:"Deadlift PR Attempt + Cardio Sprint",
+    wod:"IRON MILE",
+    blocks:[
+      {label:"Warmup", content:"<strong>10 min</strong> — Treadmill + Romanian Deadlift warmup sets, lat stretch, activation work."},
+      {label:"Strength", content:"<strong>Deadlift</strong> — Work to a heavy 3RM. Build over 15 min. PR attempt if you feel strong."},
+      {label:"HIIT", content:"<strong>10 Rounds on Peloton / Treadmill:</strong><br>• :20 MAX EFFORT<br>• :40 Easy Active Recovery<br><br>Then: 3×12 KB Romanian Deadlift"},
+      {label:"Core", content:"3 Rounds: 30s Hollow Hold + 20 Banded Deadbugs"}
+    ],
+    logFields:["Deadlift 3RM (lbs)", "Avg Sprint Output/Speed", "Core Notes"]},
+
+  {week:3, day:19, name:"Friday", type:"combo", typeLabel:"Strength+Olympic", focus:"Snatch + Press Heavy",
+    wod:"POWER OVERHEAD",
+    blocks:[
+      {label:"Warmup", content:"<strong>10 min</strong> — Snatch warm-up complex (3 positions), push press ramp-up."},
+      {label:"Lift A", content:"<strong>Push Press</strong> — Work to a heavy 3RM. Then: 3×3 @ 80%."},
+      {label:"Lift B", content:"<strong>Hang Power Snatch</strong> — Work to a heavy single. 5 sets building. Then: 3×2 @ 80%."},
+      {label:"MetCon", content:"<strong>\"GRACE\" (Scaled):</strong><br>30 Clean & Jerks for time @ 95/65 lbs<br><em>Target: Under 8 min.</em>"}
+    ],
+    logFields:["Push Press 3RM (lbs)", "Hang Snatch Heavy Single (lbs)", "Grace Time (mm:ss)", "Notes"]},
+
+  {week:3, day:20, name:"Saturday", type:"hit", typeLabel:"HIIT", focus:"Long AMRAP — Peak Conditioning",
+    wod:"QUARTER CENTURY",
+    blocks:[
+      {label:"Warmup", content:"<strong>12 min</strong> — Easy Peloton + joint circles, dynamic lunges, push-ups, band pull-aparts."},
+      {label:"Main WOD", content:"<strong>AMRAP 25 minutes:</strong><br>• 5 Pull-Ups<br>• 10 Push-Ups<br>• 15 Air Squats<br>• 200m Run or 0.1mi Bike<br><br><em>Cindy-style — pace yourself for 25 min.</em>"},
+      {label:"Cool Down", content:"15 min — Pigeon, hip flexor stretch, doorway chest, seated forward fold."}
+    ],
+    logFields:["Total Rounds + Reps", "Avg Round Pace (sec)", "RPE (1-10)", "Notes"]},
+
+  {week:3, day:21, name:"Sunday", type:"rest", typeLabel:"Rest", focus:"Full Rest / Mobility", wod:null, blocks:[], logFields:[]},
+
+  // WEEK 4 — Test & Peak
+  {week:4, day:22, name:"Monday", type:"strength", typeLabel:"Strength", focus:"Back Squat 1RM Test",
+    wod:"SQUAT PR DAY",
+    blocks:[
+      {label:"Warmup", content:"<strong>15 min</strong> — Extensive warm-up. Goblet squats, hip flexor stretch, sets at 50%, 65%, 75%, 85%."},
+      {label:"Strength — TEST", content:"<strong>Back Squat — 1RM Attempt:</strong><br>• Set 1: 80% × 3<br>• Set 2: 88% × 2<br>• Set 3: 93% × 1<br>• Set 4: New 1RM attempt<br><br><em>Log your new 1RM below!</em>"},
+      {label:"Down Sets", content:"3×5 @ 65% of new 1RM. Focus on perfect form."},
+      {label:"MetCon", content:"<strong>3 Rounds (light — move well):</strong><br>• 10 KB Goblet Squats<br>• 10 Banded Good Mornings<br>• 10 Box Step-Ups"}
+    ],
+    logFields:["NEW Back Squat 1RM (lbs) 🏆", "Previous 1RM (lbs)", "Notes"]},
+
+  {week:4, day:23, name:"Tuesday", type:"olympic", typeLabel:"Olympic", focus:"Power Clean 1RM Test + Pull-Up Test",
+    wod:"CLEAN PR DAY",
+    blocks:[
+      {label:"Warmup", content:"<strong>15 min</strong> — Extensive clean warm-up. Pulls, hang position, progressive loading."},
+      {label:"Olympic — TEST", content:"<strong>Power Clean — 1RM Attempt:</strong><br>Build to a max single over 20 min.<br>• Take jumps of 5–10 lbs per set.<br>• 3 attempts at new max."},
+      {label:"Strength — TEST", content:"<strong>Max Pull-Ups:</strong> 2 attempts at max unbroken. Rest 5 min between."},
+      {label:"MetCon", content:"<strong>EMOM 12 (Deload):</strong><br>Min 1: 3 Power Cleans (70%)<br>Min 2: 5 Strict Pull-Ups (banded)<br>Min 3: 10 KB Swings"}
+    ],
+    logFields:["NEW Power Clean 1RM (lbs) 🏆", "Max Pull-Ups (reps)", "Notes"]},
+
+  {week:4, day:24, name:"Wednesday", type:"rest", typeLabel:"Rest", focus:"Active Recovery", wod:null, blocks:[], logFields:[]},
+
+  {week:4, day:25, name:"Thursday", type:"hit", typeLabel:"HIIT", focus:"Deadlift 1RM Test + Conditioning",
+    wod:"DEADLIFT PR DAY",
+    blocks:[
+      {label:"Warmup", content:"<strong>15 min</strong> — Extensive deadlift warm-up. Hip hinge drills, progressive loading."},
+      {label:"Strength — TEST", content:"<strong>Deadlift — 1RM Attempt:</strong><br>Build to max single over 20 min.<br>• Sets at 70%, 80%, 90%+<br>• 2–3 PR attempts"},
+      {label:"Conditioning", content:"<strong>5 Rounds for Time:</strong><br>• 3 Deadlifts (70% of new 1RM)<br>• 6 Burpees<br>• 200m Run<br>• Rest 1 min"},
+      {label:"Core Finisher", content:"3×20 Banded Pull-Throughs + 3×30s Plank"}
+    ],
+    logFields:["NEW Deadlift 1RM (lbs) 🏆", "MetCon Time (mm:ss)", "Notes"]},
+
+  {week:4, day:26, name:"Friday", type:"combo", typeLabel:"Strength+Olympic", focus:"Push Press + Snatch 1RM Test",
+    wod:"OVERHEAD PR DAY",
+    blocks:[
+      {label:"Warmup", content:"<strong>15 min</strong> — Snatch drills, push press ramp-up, shoulder warm-up with bands."},
+      {label:"Lift A — TEST", content:"<strong>Push Press 1RM:</strong><br>Build to new max single. 3 attempts."},
+      {label:"Lift B — TEST", content:"<strong>Hang Power Snatch 1RM:</strong><br>Build to new max single. 3 attempts."},
+      {label:"MetCon", content:"<strong>\"Death by Thruster\":</strong><br>EMOM until failure:<br>• Minute 1: 1 Thruster<br>• Minute 2: 2 Thrusters<br>• Minute 3: 3... etc.<br>@ 65/45 lbs"}
+    ],
+    logFields:["NEW Push Press 1RM (lbs) 🏆", "NEW Hang Snatch 1RM (lbs) 🏆", "Death by Thruster: reached minute #", "Notes"]},
+
+  {week:4, day:27, name:"Saturday", type:"hit", typeLabel:"HIIT", focus:"FINAL BENCHMARK — Month 1 Closer",
+    wod:"\"THE COMEBACK\"",
+    blocks:[
+      {label:"Warmup", content:"<strong>15 min</strong> — Full body: bike, joint circles, movement prep."},
+      {label:"FINAL WOD", content:"<strong>For Time (25 min cap):</strong><br>• 1 Mile Peloton Sprint (target: beat your opening week pace)<br>• 50 KB Swings<br>• 40 Pull-Ups (banded OK)<br>• 30 Push Press (65/45 lbs)<br>• 20 Burpees<br>• 10 Power Cleans (heavy — 80% 1RM)<br>• 400m Run"},
+      {label:"Celebrate", content:"This is your Month 1 close-out. Compare to Week 1 Saturday Grind. Log your time, note improvements!"}
+    ],
+    logFields:["Final WOD Time (mm:ss)", "Vs. Week 1 WOD Time", "Overall Month 1 Notes / Wins"]},
+
+  {week:4, day:28, name:"Sunday", type:"rest", typeLabel:"Rest", focus:"Full Rest — Month Complete!", wod:null, blocks:[], logFields:[]},
 ];
 
-// ── Storage ──
-function sKey(id) { return 'ind_' + id.replace(/[^a-z0-9]/gi,'_'); }
-function load(id) {
-  try { return JSON.parse(localStorage.getItem(sKey(id))) || {links:[],actions:[],comments:[]}; }
-  catch { return {links:[],actions:[],comments:[]}; }
+// ============================================================
+// STATE
+// ============================================================
+let state = {
+  baselines: null,
+  targets: null,
+  logs: {},
+  currentWeek: 1
+};
+
+// ---- Persistent cross-device storage via window.storage ----
+const STORAGE_KEY = 'cf-comeback-v2';
+
+function showSyncStatus(msg, color) {
+  let el = document.getElementById('syncStatus');
+  if (!el) return;
+  el.textContent = msg;
+  el.style.color = color || 'var(--muted)';
+  el.style.opacity = '1';
+  clearTimeout(el._t);
+  el._t = setTimeout(() => { el.style.opacity = '0'; }, 3000);
 }
-function save(id, data) { localStorage.setItem(sKey(id), JSON.stringify(data)); }
 
-// ── State ──
-let mode = 'owner', selectedPerson = null, activeItem = null, activeGroup = null;
-
-function allPeople(field) {
-  const s = new Set();
-  RAW.forEach(g => g.items.forEach(item => item[field].forEach(p => s.add(p.trim()))));
-  return Array.from(s).sort();
+async function loadState() {
+  try {
+    const res = await fetch('/api/state');
+    const json = await res.json();
+    if (json.ok && json.data) {
+      state = json.data;
+      showSyncStatus('☁️ Loaded from server', 'var(--green)');
+      return;
+    }
+  } catch(e) {}
+  // Fallback to localStorage if server unreachable
+  try {
+    const saved = localStorage.getItem('cf_comeback_v2');
+    if (saved) state = JSON.parse(saved);
+  } catch(e) {}
 }
 
-function buildPills() {
-  const people = allPeople(mode === 'owner' ? 'owners' : 'sponsors');
-  const c = document.getElementById('pills');
-  c.innerHTML = '';
-  const all = document.createElement('button');
-  all.className = 'pill show-all' + (selectedPerson === null ? ' active-owner' : '');
-  all.textContent = 'Show All';
-  all.onclick = () => { selectedPerson = null; render(); };
-  c.appendChild(all);
-  people.forEach(name => {
-    const b = document.createElement('button');
-    b.textContent = name;
-    b.className = 'pill ' + (selectedPerson === name ? (mode === 'owner' ? 'active-owner' : 'active-sponsor') : '');
-    b.onclick = () => { selectedPerson = selectedPerson === name ? null : name; render(); };
-    c.appendChild(b);
+function saveState() {
+  // Fire and forget — never block the UI
+  const snapshot = JSON.parse(JSON.stringify(state));
+  fetch('/api/state', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(snapshot)
+  })
+    .then(r => r.json())
+    .then(j => showSyncStatus(j.ok ? '☁️ Saved' : '⚠️ Save failed', j.ok ? 'var(--green)' : 'var(--accent2)'))
+    .catch(() => showSyncStatus('⚠️ Offline — saved locally', 'var(--yellow)'));
+  try { localStorage.setItem('cf_comeback_v2', JSON.stringify(snapshot)); } catch(e) {}
+}
+
+// ============================================================
+// SETUP
+// ============================================================
+function startPlan() {
+  const vals = {
+    squat: parseFloat(document.getElementById('s_squat').value) || 135,
+    deadlift: parseFloat(document.getElementById('s_deadlift').value) || 185,
+    press: parseFloat(document.getElementById('s_press').value) || 95,
+    clean: parseFloat(document.getElementById('s_clean').value) || 115,
+    snatch: parseFloat(document.getElementById('s_snatch').value) || 65,
+    pullups: parseFloat(document.getElementById('s_pullups').value) || 5,
+    run400: parseFloat(document.getElementById('s_run400').value) || 135,
+    bike: parseFloat(document.getElementById('s_bike').value) || 5
+  };
+  state.baselines = vals;
+  state.targets = {
+    squat: Math.round((vals.squat * 1.10) / 5) * 5,
+    deadlift: Math.round((vals.deadlift * 1.10) / 5) * 5,
+    press: Math.round((vals.press * 1.08) / 5) * 5,
+    clean: Math.round((vals.clean * 1.10) / 5) * 5,
+    snatch: Math.round((vals.snatch * 1.10) / 5) * 5,
+    pullups: Math.ceil(vals.pullups * 1.20),
+    run400: Math.round(vals.run400 * 0.93),
+    bike: +(vals.bike * 0.92).toFixed(1)
+  };
+  document.getElementById('setupModal').style.display = 'none';
+  saveState();
+  renderAll();
+}
+
+function resetSetup() {
+  if (!confirm('Reset your baselines? Your workout logs will be kept.')) return;
+  state.baselines = null;
+  state.targets = null;
+  saveState();
+  document.getElementById('setupModal').style.display = 'flex';
+}
+
+// ============================================================
+// RENDER
+// ============================================================
+function renderAll() {
+  renderTargets();
+  renderWeekTabs();
+  renderWeek(state.currentWeek);
+  updateHeaderStats();
+}
+
+function renderTargets() {
+  const g = document.getElementById('targetsGrid');
+  if (!state.baselines) { g.innerHTML = '<div style="color:var(--muted);font-size:12px;grid-column:1/-1;">Complete setup to see targets.</div>'; return; }
+  const b = state.baselines;
+  const t = state.targets;
+
+  const items = [
+    {key:'squat', label:'Back Squat', cur:b.squat, tgt:t.squat, unit:'lbs', type:'strength'},
+    {key:'deadlift', label:'Deadlift', cur:b.deadlift, tgt:t.deadlift, unit:'lbs', type:'strength'},
+    {key:'press', label:'Push Press', cur:b.press, tgt:t.press, unit:'lbs', type:'strength'},
+    {key:'clean', label:'Power Clean', cur:b.clean, tgt:t.clean, unit:'lbs', type:'olympic'},
+    {key:'snatch', label:'Hang Snatch', cur:b.snatch, tgt:t.snatch, unit:'lbs', type:'olympic'},
+    {key:'pullups', label:'Max Pull-Ups', cur:b.pullups, tgt:t.pullups, unit:'reps', type:'body'},
+    {key:'run400', label:'400m Run', cur:b.run400, tgt:t.run400, unit:'sec', type:'cardio'},
+    {key:'bike', label:'1-Mile Bike', cur:b.bike, tgt:t.bike, unit:'min', type:'cardio'},
+  ];
+
+  // Get logged PRs
+  const loggedPRs = {};
+  Object.values(state.logs).forEach(log => {
+    if (log['NEW Back Squat 1RM (lbs) 🏆']) loggedPRs.squat = parseFloat(log['NEW Back Squat 1RM (lbs) 🏆']);
+    if (log['NEW Power Clean 1RM (lbs) 🏆']) loggedPRs.clean = parseFloat(log['NEW Power Clean 1RM (lbs) 🏆']);
+    if (log['NEW Deadlift 1RM (lbs) 🏆']) loggedPRs.deadlift = parseFloat(log['NEW Deadlift 1RM (lbs) 🏆']);
+    if (log['NEW Push Press 1RM (lbs) 🏆']) loggedPRs.press = parseFloat(log['NEW Push Press 1RM (lbs) 🏆']);
+    if (log['NEW Hang Snatch 1RM (lbs) 🏆']) loggedPRs.snatch = parseFloat(log['NEW Hang Snatch 1RM (lbs) 🏆']);
+    if (log['Max Pull-Ups (reps)']) loggedPRs.pullups = parseFloat(log['Max Pull-Ups (reps)']);
   });
+
+  g.innerHTML = items.map(item => {
+    const current = loggedPRs[item.key] || item.cur;
+    const range = item.tgt - item.cur;
+    const progress = range === 0 ? 100 : Math.min(100, Math.max(0, ((current - item.cur) / range) * 100));
+    const displayUnit = (item.key === 'run400' || item.key === 'bike') ? 
+      (item.key === 'run400' ? `${item.tgt}s ↓` : `${item.tgt}min ↓`) : item.tgt;
+    return `
+      <div class="target-card ${item.type}">
+        <div class="tc-lift">${item.label}</div>
+        <div style="display:flex;align-items:baseline;gap:4px">
+          <span class="tc-current">${current}</span>
+          <span class="tc-arrow">→</span>
+          <span class="tc-target">${item.tgt}</span>
+          <span class="tc-unit">${item.unit}</span>
+        </div>
+        <div class="tc-progress-bar">
+          <div class="tc-progress-fill" style="width:${progress}%"></div>
+        </div>
+      </div>
+    `;
+  }).join('');
 }
 
-function setMode(m) {
-  mode = m; selectedPerson = null;
-  document.getElementById('btn-owner').className = 'role-btn' + (m === 'owner' ? ' active' : '');
-  document.getElementById('btn-sponsor').className = 'role-btn' + (m === 'sponsor' ? ' active sponsor-mode' : '');
-  render();
+function renderWeekTabs() {
+  const tabs = document.getElementById('weekTabs');
+  tabs.innerHTML = [1,2,3,4].map(w => {
+    const count = PLAN.filter(d => d.week === w && d.type !== 'rest').length;
+    const done = PLAN.filter(d => d.week === w && d.type !== 'rest' && state.logs[d.day]).length;
+    return `<div class="week-tab ${state.currentWeek === w ? 'active' : ''}" onclick="switchWeek(${w})">
+      Week ${w} ${done}/${count}
+    </div>`;
+  }).join('');
 }
 
-function matches(item) {
-  if (!selectedPerson) return true;
-  const field = mode === 'owner' ? 'owners' : 'sponsors';
-  return item[field].some(p => p.trim() === selectedPerson);
+function switchWeek(w) {
+  state.currentWeek = w;
+  renderWeekTabs();
+  renderWeek(w);
 }
 
-// ── Render cards ──
-function render() {
-  buildPills();
-  const main = document.getElementById('main');
-  main.innerHTML = '';
-  let shown = 0;
+function renderWeek(w) {
+  const grid = document.getElementById('weekGrid');
+  const days = PLAN.filter(d => d.week === w);
+  grid.innerHTML = days.map(day => renderDayCard(day)).join('');
+}
 
-  RAW.forEach(group => {
-    const vis = selectedPerson ? group.items.filter(matches) : group.items;
-    if (selectedPerson && vis.length === 0) return;
+function renderDayCard(day) {
+  const isRest = day.type === 'rest';
+  const isLogged = state.logs[day.day] && Object.keys(state.logs[day.day]).length > 0;
+  const typeClass = {strength:'type-strength', olympic:'type-olympic', hit:'type-hit', rest:'type-rest', combo:'type-combo'}[day.type] || '';
+  const cardClass = isRest ? 'rest-day' : (isLogged ? 'completed' : '');
 
-    const block = document.createElement('div');
-    block.className = `grade-block ${group.cls}`;
-    block.innerHTML = `<div class="grade-header"><div class="grade-dot"></div><span class="grade-title">${group.grade}</span><span class="grade-count">${vis.length} indicator${vis.length!==1?'s':''}</span></div>`;
-
-    const grid = document.createElement('div');
-    grid.className = 'indicators-grid';
-
-    group.items.forEach(item => {
-      const m = matches(item);
-      if (selectedPerson && !m) return;
-      shown++;
-
-      const d = load(item.id);
-      const badges = [
-        d.links.length ? `<span class="badge badge-links">🔗 ${d.links.length} link${d.links.length>1?'s':''}</span>` : '',
-        d.actions.length ? `<span class="badge badge-actions">✓ ${d.actions.filter(a=>a.done).length}/${d.actions.length} done</span>` : '',
-        d.comments.length ? `<span class="badge badge-comments">💬 ${d.comments.length}</span>` : '',
-      ].filter(Boolean).join('');
-
-      const peopleTags = [
-        ...item.owners.map(n => `<div class="person-tag owner${selectedPerson===n&&mode==='owner'?' active-person':''}"><span class="tag-role">Owner</span> ${n}</div>`),
-        ...item.sponsors.map(n => `<div class="person-tag sponsor${selectedPerson===n&&mode==='sponsor'?' active-person':''}"><span class="tag-role">Sponsor</span> ${n}</div>`),
-      ].join('');
-
-      const card = document.createElement('div');
-      let cls = 'card';
-      if (selectedPerson) cls += m ? (mode==='owner'?' highlighted':' highlighted-sponsor') : ' dimmed';
-      card.className = cls;
-      card.innerHTML = `
-        <div class="card-id">${item.id}</div>
-        <div class="card-title">${item.title}</div>
-        <div class="card-summary">${item.summary}</div>
-        ${badges ? `<div class="card-badges">${badges}</div>` : ''}
-        <div class="card-people">${peopleTags}</div>
-        <div class="card-open-hint">open details →</div>
-      `;
-      card.onclick = () => openDrawer(item, group);
-      grid.appendChild(card);
-    });
-
-    block.appendChild(grid);
-    main.appendChild(block);
-  });
-
-  const sb = document.getElementById('stats-bar').querySelector('span');
-  if (selectedPerson) {
-    sb.innerHTML = `Showing <span class="count${mode==='sponsor'?' sponsor':''}">${shown}</span> indicator${shown!==1?'s':''} for <strong style="color:${mode==='owner'?'var(--accent)':'var(--accent2)'};">${selectedPerson}</strong>`;
+  let content = '';
+  if (isRest) {
+    content = `<div class="rest-content">🔋 ACTIVE RECOVERY<br><br>Light walk, stretching,<br>foam rolling, or full rest.<br>Sleep 8+ hrs.</div>`;
   } else {
-    sb.innerHTML = `Showing all <span class="count">27</span> indicators`;
+    content = `
+      <div class="day-body">
+        <div class="focus-line">🎯 ${day.focus}</div>
+        <div class="workout-title">${day.wod}</div>
+        <div class="workout-blocks">
+          ${day.blocks.map(b => `
+            <div class="block">
+              <div class="block-label">${b.label}</div>
+              <div class="block-content">${b.content}</div>
+            </div>
+          `).join('')}
+        </div>
+        <div class="log-section">
+          <div class="log-title">${isLogged ? '✅ LOGGED' : '📝 LOG THIS WORKOUT'}</div>
+          <div class="log-fields" id="log_${day.day}">
+            ${day.logFields.map(f => {
+              const saved = (state.logs[day.day] || {})[f] || '';
+              return `<div class="log-field">
+                <label>${f.replace(/ \(.*\)/,'').replace(' 🏆','')}</label>
+                <input type="text" placeholder="${f.match(/\(([^)]+)\)/)?.[1]||''}" value="${saved}"
+                  onchange="updateLog(${day.day}, '${f.replace(/'/g,"\\'")}', this.value)">
+              </div>`;
+            }).join('')}
+          </div>
+          <button class="btn-log ${isLogged ? 'logged' : ''}" id="btn_${day.day}" onclick="logWorkout(${day.day})">
+            ${isLogged ? '✅ MARK COMPLETE' : 'LOG WORKOUT'}
+          </button>
+        </div>
+      </div>
+    `;
   }
-  if (!main.children.length) main.innerHTML = `<div class="empty">No indicators found for <span>${selectedPerson}</span></div>`;
-}
 
-// ── Drawer ──
-const gradeColors = {'grade-3':'#38bdf8','grade-48':'#6ee7b7','grade-10':'#fb923c','grade-12':'#f472b6'};
-
-function openDrawer(item, group) {
-  activeItem = item; activeGroup = group;
-  document.getElementById('d-grade').textContent = group.grade;
-  document.getElementById('d-grade').style.color = gradeColors[group.cls];
-  document.getElementById('d-id').textContent = item.id;
-  document.getElementById('d-title').textContent = item.title;
-  document.getElementById('d-summary').textContent = item.summary;
-  document.getElementById('d-people').innerHTML = [
-    ...item.owners.map(n => `<div class="person-tag owner"><span class="tag-role">Owner</span> ${n}</div>`),
-    ...item.sponsors.map(n => `<div class="person-tag sponsor"><span class="tag-role">Sponsor</span> ${n}</div>`),
-  ].join('');
-  renderSections();
-  document.getElementById('overlay').classList.add('open');
-  document.getElementById('drawer').classList.add('open');
-  document.body.style.overflow = 'hidden';
-}
-
-function closeDrawer() {
-  document.getElementById('overlay').classList.remove('open');
-  document.getElementById('drawer').classList.remove('open');
-  document.body.style.overflow = '';
-  activeItem = null;
-  render();
-}
-
-function renderSections() {
-  if (!activeItem) return;
-  const d = load(activeItem.id);
-  renderLinks(d); renderActions(d); renderComments(d);
-}
-
-// ── Links ──
-function renderLinks(d) {
-  const el = document.getElementById('link-list');
-  if (!d.links.length) { el.innerHTML = '<div class="empty-state">No links added yet.</div>'; return; }
-  el.innerHTML = d.links.map((l,i) => `
-    <div class="link-item">
-      <div class="link-icon">📄</div>
-      <div class="link-content">
-        <div class="link-label">${esc(l.label)}</div>
-        <div class="link-url">${esc(l.url)}</div>
+  return `
+    <div class="day-card ${cardClass}" id="card_${day.day}">
+      <div class="day-header">
+        <div>
+          <div class="day-label">Week ${day.week} · Day ${day.day}</div>
+          <div class="day-name">${day.name}${isLogged ? '<span class="check-icon">✓</span>' : ''}</div>
+        </div>
+        <div class="day-type ${typeClass}">${day.typeLabel}</div>
       </div>
-      <a class="link-open" href="${esc(l.url)}" target="_blank" rel="noopener">Open ↗</a>
-      <button class="icon-btn" onclick="deleteLink(${i})" title="Remove">✕</button>
+      ${content}
     </div>
-  `).join('');
+  `;
 }
-function addLink() {
-  const label = document.getElementById('link-label-input').value.trim();
-  const url = document.getElementById('link-url-input').value.trim();
-  if (!url) return;
-  const d = load(activeItem.id);
-  d.links.push({label: label||url, url});
-  save(activeItem.id, d);
-  document.getElementById('link-label-input').value = '';
-  document.getElementById('link-url-input').value = '';
-  renderSections();
-}
-function deleteLink(i) { const d=load(activeItem.id); d.links.splice(i,1); save(activeItem.id,d); renderSections(); }
 
-// ── Actions ──
-function renderActions(d) {
-  const el = document.getElementById('action-list');
-  if (!d.actions.length) { el.innerHTML = '<div class="empty-state">No action items yet.</div>'; return; }
-  el.innerHTML = d.actions.map((a,i) => `
-    <div class="action-item">
-      <input type="checkbox" class="action-check" ${a.done?'checked':''} onchange="toggleAction(${i},this.checked)" />
-      <div class="action-text${a.done?' done':''}">${esc(a.text)}</div>
-      <button class="icon-btn" onclick="deleteAction(${i})" title="Remove">✕</button>
-    </div>
-  `).join('');
+function updateLog(dayId, field, value) {
+  if (!state.logs[dayId]) state.logs[dayId] = {};
+  state.logs[dayId][field] = value;
+  saveState();
 }
-function addAction() {
-  const text = document.getElementById('action-input').value.trim();
-  if (!text) return;
-  const d = load(activeItem.id);
-  d.actions.push({text, done:false});
-  save(activeItem.id, d);
-  document.getElementById('action-input').value = '';
-  renderSections();
+
+function logWorkout(dayId) {
+  if (!state.logs[dayId]) state.logs[dayId] = {};
+  state.logs[dayId]._completed = true;
+  saveState();
+  updateHeaderStats();
+  renderTargets();
+  renderWeekTabs();
+  // Update card visually
+  const card = document.getElementById('card_' + dayId);
+  if (card) {
+    card.classList.add('completed');
+    const btn = document.getElementById('btn_' + dayId);
+    if (btn) { btn.classList.add('logged'); btn.textContent = '✅ MARK COMPLETE'; }
+  }
+  updateHeaderStats();
 }
-function toggleAction(i, checked) { const d=load(activeItem.id); d.actions[i].done=checked; save(activeItem.id,d); renderSections(); }
-function deleteAction(i) { const d=load(activeItem.id); d.actions.splice(i,1); save(activeItem.id,d); renderSections(); }
 
-// ── Comments ──
-function renderComments(d) {
-  const el = document.getElementById('comment-list');
-  if (!d.comments.length) { el.innerHTML = '<div class="empty-state">No comments yet. Be the first.</div>'; return; }
-  el.innerHTML = d.comments.map((c,i) => `
-    <div class="comment-item">
-      <div class="comment-meta">
-        <span class="comment-author">${esc(c.author)}</span>
-        <span style="display:flex;align-items:center;gap:8px">
-          <span class="comment-time">${c.time}</span>
-          <button class="icon-btn" onclick="deleteComment(${i})" title="Remove">✕</button>
-        </span>
-      </div>
-      <div class="comment-body">${esc(c.text)}</div>
-    </div>
-  `).join('');
+function updateHeaderStats() {
+  const workoutDays = PLAN.filter(d => d.type !== 'rest');
+  const done = workoutDays.filter(d => state.logs[d.day]).length;
+  document.getElementById('hstat-done').textContent = done;
+  document.getElementById('hstat-total').textContent = workoutDays.length;
+
+  // Simple streak: consecutive days logged from day 1
+  let streak = 0;
+  for (let i = 1; i <= 28; i++) {
+    const day = PLAN.find(d => d.day === i);
+    if (day && day.type === 'rest') { continue; }
+    if (day && state.logs[day.day]) streak++;
+    else if (day) break;
+  }
+  document.getElementById('hstat-streak').textContent = streak;
+
+  // Progress
+  const pct = Math.round((done / workoutDays.length) * 100);
+  document.getElementById('monthProgressBar').style.width = pct + '%';
+  document.getElementById('monthProgressPct').textContent = pct + '%';
+
+  // Type stats
+  ['strength','olympic','hit','rest'].forEach(type => {
+    const el = document.getElementById('st-' + type);
+    if (el) {
+      if (type === 'rest') {
+        el.textContent = PLAN.filter(d => d.type === 'rest').length;
+      } else {
+        el.textContent = PLAN.filter(d => d.type === type || d.type === 'combo').filter(d => state.logs[d.day]).length;
+      }
+    }
+  });
+
+  // PRs
+  let prs = 0;
+  Object.values(state.logs).forEach(log => {
+    Object.keys(log).forEach(k => { if (k.includes('🏆') && log[k]) prs++; });
+  });
+  document.getElementById('st-prs').textContent = prs;
 }
-function addComment() {
-  const author = document.getElementById('comment-name').value.trim() || 'Anonymous';
-  const text = document.getElementById('comment-text').value.trim();
-  if (!text) return;
-  const d = load(activeItem.id);
-  const now = new Date();
-  d.comments.push({author, text, time: now.toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}) + ' · ' + now.toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit'})});
-  save(activeItem.id, d);
-  document.getElementById('comment-text').value = '';
-  renderSections();
-}
-function deleteComment(i) { const d=load(activeItem.id); d.comments.splice(i,1); save(activeItem.id,d); renderSections(); }
 
-function esc(s) { return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
-
-document.addEventListener('keydown', e => { if (e.key==='Escape') closeDrawer(); });
-
-render();
+// ============================================================
+// INIT
+// ============================================================
+(async () => {
+  try { await loadState(); } catch(e) {}
+  if (state.baselines) {
+    document.getElementById('setupModal').style.display = 'none';
+    renderAll();
+  } else {
+    renderWeekTabs();
+    renderWeek(1);
+    updateHeaderStats();
+  }
+})();
 </script>
 </body>
 </html>
